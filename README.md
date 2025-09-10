@@ -10,6 +10,8 @@
 - 自動化從全台 22 個縣市政府的官方網站下載測速照相設備資料
 - 支援 PDF 和 Excel 格式的檔案下載
 - 使用 Selenium WebDriver 進行網頁自動化操作
+- **新增功能**: 完整的錯誤處理機制，單一縣市失敗不影響其他縣市處理
+- **新增功能**: Debug 模式，可單獨測試特定縣市
 
 ### 2. 資料轉換 (Converter)
 - 將 PDF 檔案中的表格資料轉換為 Excel 格式
@@ -101,10 +103,27 @@ pip install python-dateutil
 ## 使用方式
 
 ### 1. 資料收集
+
+#### 正常模式（處理所有縣市）
 ```bash
 cd selenium
 python selenium_main.py
 ```
+
+#### Debug 模式（只處理特定縣市）
+```bash
+cd selenium
+# 只處理桃園市
+python selenium_main.py TaoYuan
+
+# 只處理台北市
+python selenium_main.py taipei
+
+# 只處理高雄市
+python selenium_main.py Kaohsiung
+```
+
+**可用的縣市名稱**: taipei, TaoYuan, KeeLung, Science_Park, HsinChu_web, MiaoLi, TaiChung, YunLin, newTaipei, HsinChu, ChiaYi, NanTou, TaiNan, TaiTung, HuaLian, YiLan, KinMen, Kaohsiung, ChiaYi_sh, PengHu, ChangHua
 
 ### 2. 資料轉換
 ```bash
@@ -166,12 +185,57 @@ python compare_main.py
 - 產生易讀的 Excel 報告
 - 支援多種輸出格式
 
+### 5. 錯誤處理與穩定性
+- **智能錯誤處理**: 單一縣市處理失敗時，程式會記錄錯誤並繼續處理其他縣市
+- **詳細錯誤報告**: 提供完整的處理結果摘要，包括成功和失敗的縣市清單
+- **資源管理**: 確保 WebDriver 正確關閉，避免資源洩漏
+- **超時控制**: 設定頁面載入超時時間，避免程式卡住
+
 ## 注意事項
 
 1. **網路連線**: 資料收集需要穩定的網路連線
 2. **Chrome 版本**: 確保 ChromeDriver 與 Chrome 瀏覽器版本匹配
 3. **資料更新**: 政府網站結構可能變更，需要定期更新爬蟲腳本
 4. **法律合規**: 請遵守各網站的使用條款和爬蟲政策
+5. **Debug 模式**: 開發和測試時建議使用 Debug 模式，只處理特定縣市以提高效率
+6. **錯誤處理**: 程式具備完整的錯誤處理機制，即使部分縣市失敗也會繼續處理其他縣市
+
+## 新功能說明
+
+### Debug 模式
+Debug 模式讓開發者可以單獨測試特定縣市，提高開發和除錯效率：
+
+```bash
+# 測試桃園市
+python selenium_main.py TaoYuan
+
+# 測試台北市
+python selenium_main.py taipei
+```
+
+### 錯誤處理機制
+- **繼續執行**: 即使某個縣市處理失敗，程式會繼續處理其他縣市
+- **詳細記錄**: 記錄每個縣市的處理狀態和錯誤訊息
+- **結果摘要**: 在程式結束時提供完整的處理結果摘要
+
+### 處理結果範例
+```
+==================================================
+資料下載處理完成摘要
+==================================================
+✅ 成功處理的縣市 (20 個):
+   - taipei
+   - TaoYuan
+   - KeeLung
+   ...
+
+❌ 處理失敗的縣市 (2 個):
+   - MiaoLi: 頁面載入超時
+   - TaiNan: 找不到網頁元素
+
+總計: 20 成功, 2 失敗
+==================================================
+```
 
 ## 維護與更新
 
@@ -179,6 +243,7 @@ python compare_main.py
 - 更新地址解析規則以支援新的地址格式
 - 優化匹配演算法以提高準確率
 - 新增支援的縣市和資料來源
+- 持續改善錯誤處理機制和穩定性
 
 ## 授權
 

@@ -259,15 +259,76 @@ def process_ChiaYi_YiLan(driver, info):
         for keyword, keyWord in keywords_keywords.items():
             driver.get(url)
             wait_for_page_load(driver)
-            element = driver.find_element(By.PARTIAL_LINK_TEXT, keyword)
+            
+            # 直接使用部分匹配尋找關鍵字連結
+            element = None
+            
+            # 方法1: 部分匹配 - 將關鍵字分解成詞組
+            keyword_parts = keyword.split()
+            for part in keyword_parts:
+                if len(part) > 2:  # 只處理長度大於2的詞組
+                    try:
+                        element = driver.find_element(By.PARTIAL_LINK_TEXT, part)
+                        print(f"✅ 找到部分匹配的連結 (關鍵字: '{part}'): {keyword}")
+                        break
+                    except NoSuchElementException:
+                        continue
+            
+            # 方法2: 如果還是找不到，搜尋所有連結
+            if element is None:
+                all_links = driver.find_elements(By.TAG_NAME, "a")
+                for link in all_links:
+                    try:
+                        link_text = link.text
+                        # 檢查連結文字是否包含關鍵字的任何部分
+                        if any(part in link_text for part in keyword_parts if len(part) > 2):
+                            element = link
+                            print(f"✅ 找到包含關鍵字的連結: {link_text}")
+                            break
+                    except:
+                        continue
+            
+            if element is None:
+                print(f"❌ 無法找到包含關鍵字 '{keyword}' 的連結")
+                continue
+                
             element.click()
-            pdf_links = driver.find_elements(By.PARTIAL_LINK_TEXT, keyWord)
-
-            for pdf_link in pdf_links:
-                pdf_link.click()
-            time.sleep(10)
-    finally:
-        driver.quit()
+            wait_for_page_load(driver)
+            
+            # 尋找 PDF 連結 - 直接使用部分匹配
+            pdf_links = []
+            
+            # 方法1: 部分匹配 PDF 關鍵字
+            keyWord_parts = keyWord.split()
+            for part in keyWord_parts:
+                if len(part) > 2:
+                    pdf_links = driver.find_elements(By.PARTIAL_LINK_TEXT, part)
+                    if pdf_links:
+                        print(f"✅ 找到部分匹配的 PDF 連結 (關鍵字: '{part}')")
+                        break
+            
+            # 方法2: 如果還是找不到，搜尋所有 PDF 連結
+            if not pdf_links:
+                pdf_links = driver.find_elements(By.PARTIAL_LINK_TEXT, 'pdf')
+                if not pdf_links:
+                    all_links = driver.find_elements(By.TAG_NAME, "a")
+                    pdf_links = [link for link in all_links if 'pdf' in link.text.lower()]
+            
+            print(f"📄 找到 {len(pdf_links)} 個 PDF 連結")
+            
+            for i, pdf_link in enumerate(pdf_links):
+                try:
+                    print(f"⬇️ 正在下載第 {i+1} 個 PDF 檔案...")
+                    pdf_link.click()
+                    time.sleep(2)
+                except Exception as e:
+                    print(f"❌ 下載第 {i+1} 個 PDF 時發生錯誤: {str(e)}")
+                    continue
+                    
+            time.sleep(3)
+    except Exception as e:
+        print(f"❌ 處理宜蘭縣資料時發生錯誤: {str(e)}")
+        raise
 
 
 def process_TaiNan(driver, info):

@@ -102,7 +102,7 @@ city_url_keywords = {
     'YiLan': {
         'url': 'https://www.ilcpb.gov.tw/Message?itemid=653&mid=5651',
         'keywords_keyWords': {
-            '本局固定式科學儀器執法設備設置地點一覽表': '設置地點一覽表.pdf',
+            '本局固定式 ': '設置地點一覽表',
         }
     },
     'KinMen': {
@@ -176,9 +176,33 @@ def clear_folder(folder_path):
             print(f'Failed to delete {file_path}. Reason: {e}')
 
 
-def main():
-    for city, info in city_url_keywords.items():
-        if city == 'TaoYuan':
+def main(debug_city=None):
+    """
+    主函數
+    
+    Args:
+        debug_city (str, optional): 如果指定，只處理該縣市。例如: 'TaoYuan', 'taipei' 等
+    """
+    # 記錄成功和失敗的縣市
+    successful_cities = []
+    failed_cities = []
+    
+    # 如果指定了 debug 縣市，只處理該縣市
+    if debug_city:
+        if debug_city not in city_url_keywords:
+            print(f"❌ 錯誤：找不到縣市 '{debug_city}'")
+            print(f"可用的縣市: {', '.join(city_url_keywords.keys())}")
+            return
+        print(f"🔧 DEBUG 模式：只處理 {debug_city} 縣市")
+        cities_to_process = {debug_city: city_url_keywords[debug_city]}
+    else:
+        cities_to_process = city_url_keywords
+    
+    for city, info in cities_to_process.items():
+        driver = None
+        try:
+            print(f"\n開始處理 {city} 縣市...")
+            
             # 存檔路徑
             download_path = os.path.join(project_path, r"selenium\city_data", city)
             # check download path exists
@@ -195,15 +219,76 @@ def main():
                 "plugins.always_open_pdf_externally": True  # 這樣就不會在 Chrome 內嵌閱讀 PDF，而是直接下載
             }
             chrome_options.add_experimental_option("prefs", prefs)
+            
+            # 設定超時時間
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--remote-debugging-port=9222")
+            
             # set driver
             driver = webdriver.Chrome(options=chrome_options)
+            driver.set_page_load_timeout(30)  # 設定頁面載入超時時間
+            
             # process city data
             city_function_map[city](driver, info)
-            print(city, "data download complete")
-            # driver = webdriver.Chrome(options=chrome_options)
-            # pdf_2_excel(driver, city)
-    print("all data download complete")
+            print(f"✅ {city} 資料下載完成")
+            successful_cities.append(city)
+            
+        except WebDriverException as e:
+            print(f"❌ {city} WebDriver 錯誤: {str(e)}")
+            failed_cities.append((city, f"WebDriver 錯誤: {str(e)}"))
+            
+        except TimeoutException as e:
+            print(f"❌ {city} 頁面載入超時: {str(e)}")
+            failed_cities.append((city, f"頁面載入超時: {str(e)}"))
+            
+        except NoSuchElementException as e:
+            print(f"❌ {city} 找不到網頁元素: {str(e)}")
+            failed_cities.append((city, f"找不到網頁元素: {str(e)}"))
+            
+        except Exception as e:
+            print(f"❌ {city} 發生未預期錯誤: {str(e)}")
+            print(f"錯誤詳情: {traceback.format_exc()}")
+            failed_cities.append((city, f"未預期錯誤: {str(e)}"))
+            
+        finally:
+            # 確保 driver 被正確關閉
+            if driver:
+                try:
+                    driver.quit()
+                except Exception as e:
+                    print(f"⚠️ 關閉 {city} 的 WebDriver 時發生錯誤: {str(e)}")
+            
+            print(f"完成 {city} 的處理，繼續下一個縣市...")
+    
+    # 輸出處理結果摘要
+    print("\n" + "="*50)
+    print("資料下載處理完成摘要")
+    print("="*50)
+    print(f"✅ 成功處理的縣市 ({len(successful_cities)} 個):")
+    for city in successful_cities:
+        print(f"   - {city}")
+    
+    if failed_cities:
+        print(f"\n❌ 處理失敗的縣市 ({len(failed_cities)} 個):")
+        for city, error in failed_cities:
+            print(f"   - {city}: {error}")
+    else:
+        print("\n🎉 所有縣市都處理成功！")
+    
+    print(f"\n總計: {len(successful_cities)} 成功, {len(failed_cities)} 失敗")
+    print("="*50)
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    
+    # 檢查是否有命令列參數指定要 debug 的縣市
+    if len(sys.argv) > 1:
+        debug_city = sys.argv[1]
+        print(f"🚀 啟動程式，DEBUG 模式：只處理 {debug_city}")
+        main(debug_city=debug_city)
+    else:
+        print("🚀 啟動程式，處理所有縣市")
+        main()
