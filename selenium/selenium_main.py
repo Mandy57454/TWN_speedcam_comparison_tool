@@ -5,6 +5,7 @@ from city_processor import process_taipei, process_TaoYuan, process_KeeLung, pro
 from city_processor import process_MiaoLi_YunLin, process_TaiChung, process_ChiaYi_YiLan, process_TaiTung, process_NanTou
 from city_processor import process_Kaohsiung, process_PengHu, process_TaiNan, process_Science_Park, process_HsinChu
 from city_processor import process_ChangHua, process_HuaLian_KinMen, process_newtaipei
+from selenium.common.exceptions import WebDriverException, TimeoutException, NoSuchElementException
 # from pdf_to_excel import pdf_2_excel
 
 project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"
@@ -228,7 +229,7 @@ def main(debug_city=None):
             
             # set driver
             driver = webdriver.Chrome(options=chrome_options)
-            driver.set_page_load_timeout(30)  # 設定頁面載入超時時間
+            driver.set_page_load_timeout(60)  # 設定頁面載入超時時間
             
             # process city data
             city_function_map[city](driver, info)
