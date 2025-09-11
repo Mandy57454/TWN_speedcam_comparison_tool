@@ -108,15 +108,15 @@ def process_TaoYuan(driver, info):
 
 def process_KeeLung(driver, info):
     url = info['url']
-    keywords_index_s = info['keywords_index_s']
+    keywords = info['keywords']
     try:
-        for word, index_s in keywords_index_s.items():
+        for word in keywords:
             driver.get(url)
             wait_for_page_load(driver)
             element = driver.find_element(By.PARTIAL_LINK_TEXT, word)
             element.click()
             pdf_links = driver.find_elements(By.CLASS_NAME, 'fileType')
-            for index in index_s:
+            for index in range(len(pdf_links)):
                 pdf_links[int(index)].click()
             time.sleep(5)
     finally:
