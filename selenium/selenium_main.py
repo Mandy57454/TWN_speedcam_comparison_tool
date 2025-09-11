@@ -15,17 +15,15 @@ city_url_keywords = {
     'taipei': {
         'url': 'https://td.police.gov.taipei/Content_List.aspx?n=6495BB8B3BA7248D',
         'keywords_index_s': {
-            '固定測速桿地點': '1',
-            '移動式測速照相地點': '0',
-            '固定式科技執法地點': '0',
+            '固定測速桿地點': [],
+            '移動式測速照相地點': [],
+            '固定式科技執法地點': [],
         }
     },
     'TaoYuan': {
         'url': 'https://traffic2.tyhp.gov.tw/index.php?catid=77#gsc.tab=0',
         'keywords_index_s': {
-            '114年桃園市政府警察局交通警察大隊科技執法設備設置及移動式地點一覽表': {
-                '0', '1',
-            }
+            '114年桃園市政府警察局交通警察大隊科技執法設備設置及移動式地點一覽表': [],  # 空陣列，下載所有 PDF
         }
     },
     'KeeLung': {

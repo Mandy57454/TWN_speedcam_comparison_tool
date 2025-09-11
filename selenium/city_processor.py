@@ -54,13 +54,26 @@ def process_taipei(driver, info):
             wait_for_page_load(driver)
             element = driver.find_element(By.PARTIAL_LINK_TEXT, word)
             element.click()
-            pdf_links = driver.find_elements(By.CLASS_NAME, 'pdf')
+            wait_for_page_load(driver)
+            
+            # 找到所有 PDF 連結
+            pdf_links = driver.find_elements(By.PARTIAL_LINK_TEXT, 'pdf')
+            print(f"找到 {len(pdf_links)} 個 PDF 檔案")
+            
+            # 下載所有 PDF 檔案
+            for i, pdf_link in enumerate(pdf_links):
+                try:
+                    print(f"正在下載第 {i+1} 個 PDF 檔案...")
+                    pdf_link.click()
+                    time.sleep(2)  # 等待下載開始
+                except Exception as e:
+                    print(f"下載第 {i+1} 個 PDF 時發生錯誤: {str(e)}")
+                    continue
+                    
+    except Exception as e:
+        print(f"處理臺北市資料時發生錯誤: {str(e)}")
+        raise
 
-            for index in index_s:
-                pdf_links[int(index)].click()
-            time.sleep(3)
-    finally:
-        driver.quit()
 
 
 def process_TaoYuan(driver, info):
@@ -72,15 +85,25 @@ def process_TaoYuan(driver, info):
             wait_for_page_load(driver)
             element = driver.find_element(By.PARTIAL_LINK_TEXT, word)
             element.click()
-            # pdf_links = wait_for_element(driver, By.PARTIAL_LINK_TEXT, 'pdf')
-            # pdf_link.click()
-            # print(len(pdf_links))
+            wait_for_page_load(driver)
+            
+            # 找到所有 PDF 連結
             pdf_links = driver.find_elements(By.PARTIAL_LINK_TEXT, 'pdf')
-            for index in index_s:
-                pdf_links[int(index)].click()
-            time.sleep(2)
-    finally:
-        driver.quit()
+            print(f"找到 {len(pdf_links)} 個 PDF 檔案")
+            
+            # 下載所有 PDF 檔案
+            for i, pdf_link in enumerate(pdf_links):
+                try:
+                    print(f"正在下載第 {i+1} 個 PDF 檔案...")
+                    pdf_link.click()
+                    time.sleep(2)  # 等待下載開始
+                except Exception as e:
+                    print(f"下載第 {i+1} 個 PDF 時發生錯誤: {str(e)}")
+                    continue
+                    
+    except Exception as e:
+        print(f"處理桃園市資料時發生錯誤: {str(e)}")
+        raise
 
 
 def process_KeeLung(driver, info):
