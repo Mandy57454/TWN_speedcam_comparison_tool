@@ -2,7 +2,8 @@ import pandas as pd
 import os
 import openpyxl
 
-project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"
+# 動態取得專案路徑
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 need_process_path = os.path.join(project_path, r"split_data\TWN Speed cam update.xlsx")
 output_path = os.path.join(project_path, r"split_data\input")

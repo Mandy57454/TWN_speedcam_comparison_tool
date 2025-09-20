@@ -10,7 +10,8 @@ from data_process2 import data_process2
 from data_process3 import data_process3
 import unicodedata
 
-project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"
+# 動態取得專案路徑
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def clear_folder(o_folder_path):

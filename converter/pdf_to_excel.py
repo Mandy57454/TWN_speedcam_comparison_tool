@@ -7,7 +7,8 @@ from dateutil.parser import parse
 from openpyxl.styles import Font
 from process_taipei_data import process_taipei_data
 # Define the project path
-project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"  # 專案主要路徑
+# 動態取得專案路徑
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Define the cities list
 cities = {  # 所有城市或區域名稱

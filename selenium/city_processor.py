@@ -10,7 +10,8 @@ from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import StaleElementReferenceException
 import pandas as pd
 
-project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"
+# 動態取得專案路徑
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def wait_for_page_load(driver, timeout=10):
@@ -172,14 +173,21 @@ def process_newtaipei(driver, info):
         wait_for_page_load(driver)
         element = driver.find_element(By.PARTIAL_LINK_TEXT, fixed)
         element.click()
-        # pdf_links = driver.find_elements(By.PARTIAL_LINK_TEXT, keyWord)
-        pdf = wait.until(EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, keyWord)))
-        time.sleep(0.3)
-        pdf.click()
-
-        # 回到原列表页，否则下一次循环你就一直在 PDF 页面上了
-        driver.back()
-        time.sleep(1)
+        wait_for_page_load(driver)
+            
+            # 找到所有 PDF 連結
+        pdf_links = driver.find_elements(By.PARTIAL_LINK_TEXT, 'pdf')
+        print(f"找到 {len(pdf_links)} 個 PDF 檔案")
+            
+        # 下載所有 PDF 檔案
+        for i, pdf_link in enumerate(pdf_links):
+            try:
+                print(f"正在下載第 {i+1} 個 PDF 檔案...")
+                pdf_link.click()
+                time.sleep(2)  # 等待下載開始
+            except Exception as e:
+                print(f"下載第 {i+1} 個 PDF 時發生錯誤: {str(e)}")
+                continue
 ####################################################################
     driver.get(url)
     wait_for_page_load(driver)

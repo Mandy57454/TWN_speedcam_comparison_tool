@@ -5,7 +5,8 @@ import re
 import xlrd
 from openpyxl import Workbook
 
-project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"
+# 動態取得專案路徑
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 cities = {
     'taipei', 'TaoYuan', 'KeeLung', 'Science_Park', 'HsinChu_web',

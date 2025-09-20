@@ -2,7 +2,8 @@ import pandas as pd
 import os
 
 
-project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"
+# 動態取得專案路徑
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 c_type = {
     '964': {'964', '區間', '測速跨線未保安距'},

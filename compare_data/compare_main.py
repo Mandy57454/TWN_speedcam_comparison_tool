@@ -5,7 +5,8 @@ from openpyxl.styles import Font
 from openpyxl.styles import PatternFill
 from fuzzywuzzy import fuzz
 
-project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"
+# 動態取得專案路徑
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def sort_excel(input_data, output_data):

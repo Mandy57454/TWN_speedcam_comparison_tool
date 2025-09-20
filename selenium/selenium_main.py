@@ -1,5 +1,6 @@
 import os
 import shutil
+import traceback
 from selenium import webdriver
 from city_processor import process_taipei, process_TaoYuan, process_KeeLung, process_ChiaYi_sh, process_HsinChu_web
 from city_processor import process_MiaoLi_YunLin, process_TaiChung, process_ChiaYi_YiLan, process_TaiTung, process_NanTou
@@ -8,7 +9,8 @@ from city_processor import process_ChangHua, process_HuaLian_KinMen, process_new
 from selenium.common.exceptions import WebDriverException, TimeoutException, NoSuchElementException
 # from pdf_to_excel import pdf_2_excel
 
-project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"
+# 動態取得專案路徑
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # cities url and keywords
 city_url_keywords = {
@@ -63,7 +65,7 @@ city_url_keywords = {
     },
     'newtaipei': {
         'url': 'https://www.traffic.police.ntpc.gov.tw/lp-3313-27.html',
-        'fixed': {'新北市「固定式科學儀器執法設備設置地點」一覽表及公告': '固定式科學儀器執法設備設置地點一覽表'},
+        'fixed': {'新北市「固定式科學儀器執法設備設置地點」一覽表及公告': []},
         'mobile': '移動式科學儀器執法設備設置地點'
     },
     'HsinChu': {

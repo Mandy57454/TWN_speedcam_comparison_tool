@@ -4,7 +4,8 @@ import os
 need_process_file = "臺北市政府警察局固定式違規照相設備及區間測速裝置設置地點一覽表"
 
 # 輸入檔案與工作表名稱
-project_path = r"C:\Users\mandy.chang\PycharmProjects\TWN_speedcam_compare"
+# 動態取得專案路徑
+project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 input_path = os.path.join(project_path, r"converter\city_data\taipei",
                           f"{need_process_file}.xlsx")
 output_path = os.path.join(project_path, r"converter\city_data\taipei", f"{need_process_file}.xlsx")
