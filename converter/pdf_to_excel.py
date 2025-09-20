@@ -143,47 +143,78 @@ def convert_to_dataframe(tables):
 
 def main():
     for city in cities:
-        # if city == 'ChangHua':
+        try:
             folder_path = os.path.join(project_path, r"selenium\city_data", city)  # 原始 PDF 資料夾
             excel_path = os.path.join(project_path, r"converter\city_data", city)  # 轉換後 Excel 資料夾
+            
+            # 檢查原始資料夾是否存在
+            if not os.path.exists(folder_path):
+                print(f"警告: 找不到資料夾 {folder_path}，跳過城市 {city}")
+                continue
+            
             # check download path exists
             if os.path.exists(excel_path):
                 clear_folder(excel_path)  # 清空舊檔案
             else:
                 os.makedirs(excel_path)  # 建立新資料夾
+            
+            print(f"正在處理城市: {city}")
             # loop folder 中的所有 file
             for filename in os.listdir(folder_path):
-                file_path = os.path.join(folder_path, filename)
-                if filename.endswith('.pdf'):  # 若為 PDF 檔案
-                    output_path = os.path.join(excel_path, os.path.splitext(filename)[0] + '.xlsx')
-                    # 提取PDF中的所有表格数据
-                    tables = extract_tables_from_pdf(file_path)  # 擷取 PDF 表格
-                    print(f"Extracted {len(tables)} tables from {filename}.") \
-                        if tables else print(f"No tables extracted from {filename}.")  # 列印結果
+                try:
+                    file_path = os.path.join(folder_path, filename)
+                    if filename.endswith('.pdf'):  # 若為 PDF 檔案
+                        output_path = os.path.join(excel_path, os.path.splitext(filename)[0] + '.xlsx')
+                        # 提取PDF中的所有表格数据
+                        tables = extract_tables_from_pdf(file_path)  # 擷取 PDF 表格
+                        print(f"Extracted {len(tables)} tables from {filename}.") \
+                            if tables else print(f"No tables extracted from {filename}.")  # 列印結果
 
-                    dfs = convert_to_dataframe(tables)
-                    if not dfs:  # 沒有任何表
-                        # 建立一個空的DataFrame，讓excel一定有一個sheet
-                        empty_df = pd.DataFrame([["無資料"]], columns=["狀態"])
-                        with pd.ExcelWriter(output_path) as writer:
-                            empty_df.to_excel(writer, sheet_name="無資料", index=False)
+                        dfs = convert_to_dataframe(tables)
+                        if not dfs:  # 沒有任何表
+                            # 建立一個空的DataFrame，讓excel一定有一個sheet
+                            empty_df = pd.DataFrame([["無資料"]], columns=["狀態"])
+                            with pd.ExcelWriter(output_path) as writer:
+                                empty_df.to_excel(writer, sheet_name="無資料", index=False)
+                        else:
+                            with pd.ExcelWriter(output_path) as writer:
+                                for i, df in enumerate(dfs):
+                                    df.to_excel(writer, sheet_name=f"Sheet_{i + 1}", index=False)
+                            # 列印完成訊息
+                            print(f"PDF 中的表格已成功提取並保存到 {output_path}")
+
+                    # 原本就已經是 .xlsx or .xls 直接 copy 到 output path
+                    elif filename.endswith('.xlsx') or filename.endswith('.xls'):
+                        output_path = os.path.join(excel_path, filename)
+                        shutil.copy(file_path, output_path)
+                        print(f"Excel 文件已成功複製到 {output_path}")
+                    # 其他不是.pdf or .xlsx or .xls 的直接 skip
                     else:
-                        with pd.ExcelWriter(output_path) as writer:
-                            for i, df in enumerate(dfs):
-                                df.to_excel(writer, sheet_name=f"Sheet_{i + 1}", index=False)
-                        # 列印完成訊息
-                        print(f"PDF 中的表格已成功提取並保存到 {output_path}")
-
-                # 原本就已經是 .xlsx or .xls 直接 copy 到 output path
-                elif filename.endswith('.xlsx') or filename.endswith('.xls'):
-                    output_path = os.path.join(excel_path, filename)
-                    shutil.copy(file_path, output_path)
-                    print(f"Excel 文件已成功複製到 {output_path}")
-                # 其他不是.pdf or .xlsx or .xls 的直接 skip
-                else:
-                    print(f"Skipping non-PDF or non-Excel file: {filename}")
+                        print(f"Skipping non-PDF or non-Excel file: {filename}")
+                        
+                except Exception as e:
+                    print(f"處理檔案 {filename} 時發生錯誤: {e}")
+                    continue
+            
+            print(f"城市 {city} 處理完成")
+            
+        except Exception as e:
+            print(f"處理城市 {city} 時發生錯誤: {e}")
+            continue
 
 
 if __name__ == "__main__":
-    main()
-    process_taipei_data()
+    try:
+        main()
+        print("所有城市處理完成")
+    except Exception as e:
+        print(f"主程式執行時發生錯誤: {e}")
+    
+    try:
+        print("開始處理台北資料...")
+        process_taipei_data()
+        print("台北資料處理完成")
+    except Exception as e:
+        print(f"處理台北資料時發生錯誤: {e}")
+    
+    print("程式執行完畢")
