@@ -74,13 +74,13 @@ def average(average_sheet, data_rows):
 
 def combine(combine_sheet, data_rows):
     combine_data = []
-    for row in combine_sheet.iter_rows(min_row=2, min_col=5, max_col=14, values_only=True):
+    for row in combine_sheet.iter_rows(min_row=2, min_col=5, max_col=16, values_only=True):
         combine_data.append(row)
     for i in combine_data:
         combine_row_dict = {
-            'city': i[7],
-            'district': i[8],
-            'address': i[9],
+            'city': i[9],
+            'district': i[10],
+            'address': i[11],
             'camera_type': i[1],
             'speed': i[0],
             'type': 'combine'

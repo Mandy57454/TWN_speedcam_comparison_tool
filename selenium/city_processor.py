@@ -174,12 +174,11 @@ def process_newtaipei(driver, info):
         element = driver.find_element(By.PARTIAL_LINK_TEXT, fixed)
         element.click()
         wait_for_page_load(driver)
-            
-            # 找到所有 PDF 連結
+        # 找到所有 PDF 連結
         pdf_links = driver.find_elements(By.PARTIAL_LINK_TEXT, 'pdf')
         print(f"找到 {len(pdf_links)} 個 PDF 檔案")
             
-        # 下載所有 PDF 檔案
+            # 下載所有 PDF 檔案
         for i, pdf_link in enumerate(pdf_links):
             try:
                 print(f"正在下載第 {i+1} 個 PDF 檔案...")
